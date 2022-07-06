@@ -1,8 +1,8 @@
 # ipynbcompress
 
-[![build-status-image]][travis]
-[![pypi-version]][pypi]
-[![wheel]][pypi]
+![project unmaintained](https://img.shields.io/badge/project-unmaintained-red.svg)
+
+_**Note**: this project is sparcely maintained._
 
 ## Overview
 
@@ -16,10 +16,10 @@ prefer fast loading times.
 
 ## Installation
 
-Install using `pip`...
+Install the latest version from Github:
 
 ```bash
-pip install ipynbcompress
+pip install git+https://github.com/msipola/ipynbcompress.git
 ```
 
 ## Example

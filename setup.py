@@ -19,6 +19,8 @@ setup(
     author='Arve Seljebu',
     author_email='arve.seljebu@gmail.com',
     url='https://github.com/arve0/ipynbcompress',
+    maintainer='Mikko Sipola',
+    maintainer_email='mikko.sipola@uef.fi',
     packages=[
         'ipynbcompress',
     ],
