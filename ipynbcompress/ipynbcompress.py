@@ -3,16 +3,28 @@ from base64 import b64decode, b64encode
 from PIL import Image
 from io import BytesIO
 from os import stat
-from IPython.nbformat import read, write
+from nbformat import read, write
+
+from IPython.core.display import Javascript
+from IPython.display import display
 
 
-def compress(filename, output_filename=None, img_width=2048, img_format='png'):
+def get_notebook_name():
+    """Returns the name of the current notebook as a string
+    
+    """
+    display(Javascript('IPython.notebook.kernel.execute("notebook_name = " + \
+    "\'"+IPython.notebook.notebook_name+"\'");'))
+    return notebook_name
+
+
+def compress(filename=None, output_filename=None, img_width=2048, img_format='png'):
     """Compress images in IPython notebooks.
 
     Parameters
     ----------
     filename : string
-        Notebook to compress. Will take any notebook format.
+        Notebook to compress. Will take any notebook format. If not given, will use the current notebook.
     output_filename : string
         If you do not want to overwrite your existing notebook, supply an
         filename for the new compressed notebook.
@@ -27,6 +39,9 @@ def compress(filename, output_filename=None, img_width=2048, img_format='png'):
     int
         Size of new notebook in bytes.
     """
+    if filename == None:
+        filename = get_notebook_name()
+        filename = get_notebook_name() #first time doesn't somehow work in notebook, might be known bug
     orig_filesize = stat(filename).st_size
 
     # compress images
@@ -41,17 +56,12 @@ def compress(filename, output_filename=None, img_width=2048, img_format='png'):
         if not data:
             continue
         keys = data.copy().keys()
-        for key in keys:
+        for key in list(keys):
             if 'image' in key:
                 string = ''.join(data[key])
                 bytes_img = b64decode(string)
                 io_img = BytesIO(bytes_img)
                 img = Image.open(io_img)
-                factor = float(img_width) / img.size[0]
-                if factor < 1:
-                    # only resize large images
-                    new_size = [int(s*factor+0.5) for s in img.size]
-                    img = img.resize(new_size)
                 out = BytesIO()
                 img.save(out, img_format)
                 out.seek(0)
@@ -71,5 +81,6 @@ def compress(filename, output_filename=None, img_width=2048, img_format='png'):
     # calculate bytes saved
     bytes_saved = orig_filesize - stat(output_filename).st_size
     if bytes_saved <= 0:
-        print('%s: warning: no compression - %s bytes gained' % (filename, -bytes_saved))
-    return bytes_saved
+        return print('%s: warning: no compression - %s bytes gained' % (filename, -bytes_saved))
+    else:
+        return print('%s: %s bytes saved' %(filename,bytes_saved))
